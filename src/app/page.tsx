@@ -1,103 +1,138 @@
+"use client"
+
 import Image from "next/image";
+import {Author, IdentityCard} from "@/components/identity-card";
+import {LanguageLevels} from "@/lib/interfaces";
+import {MoveDown} from "lucide-react";
+import {MouseEventHandler, useCallback, useEffect, useRef, useState} from "react";
+import {useTheme} from "next-themes";
+import {themes} from "@/lib/themes";
+
+const author: Author = {
+  name: 'Antoine de BARBARIN',
+  email: 'amdebarbarin@gmail.com',
+  birth_date: '06/01/1990',
+  location: 'Aix-en-Provence',
+  avatar_path: '/img/profile-pic-sm.jpg',
+  cv_file_path: '/docs/cv.pdf',
+  tags: [
+    {
+      id: 1,
+      value: 'Cybersecurity'
+    },
+    {
+      id: 2,
+      value: 'IT Infrastructure'
+    },
+    {
+      id: 3,
+      value: 'Networking'
+    },
+    {
+      id: 4,
+      value: 'Web Development'
+    }
+  ],
+  languages: [
+    {
+      id: 1,
+      name: 'Spanish',
+      level: LanguageLevels.C2,
+    },
+    {
+      id: 2,
+      name: 'Italian',
+      level: LanguageLevels.C2,
+    },
+    {
+      id: 3,
+      name: 'English',
+      level: LanguageLevels.C1,
+    }
+  ]
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const secondBlockRef = useRef<HTMLDivElement>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleDownArrow: MouseEventHandler = useCallback(() => {
+    if (secondBlockRef.current) {
+      secondBlockRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+  }, []);
+
+  const [mounted, setMounted] = useState(false);
+
+  const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const secondBlockBackgroundImageURL =
+      resolvedTheme === themes.dark
+          ? '/img/coding-screen-img.png'
+          : '/img/coding-screen-light.png';
+
+  let secondBlockBackground = <div className="bg-base-100 absolute inset-0 z-0"></div>
+
+  if (mounted) {
+    secondBlockBackground = <Image
+        src={secondBlockBackgroundImageURL}
+        alt="Coding screen background"
+        fill // The image will fill its parent container
+        style={{ objectFit: 'cover' }} // Ensures the image covers the entire area
+        className="absolute inset-0 z-0" // Stretches to fill and pushes the image to the back
+    />;
+  }
+
+  return (
+    <div className="font-sans grid grid-rows-[20px_1fr_20px] justify-items-center min-h-screen pt-14">
+      <main className="flex flex-col gap-[32px] row-start-2 justify-center sm:items-start w-full">
+        <div className="flex flex-col justify-around items-center w-full min-h-[calc(100dvh-72px)] gap-2 lg:gap-4 pb-12">
+          <IdentityCard
+              avatar_path={author.avatar_path}
+              cv_file_path={author.cv_file_path}
+              name={author.name}
+              birth_date={author.birth_date}
+              email={author.email}
+              location={author.location}
+              languages={author.languages}
+              tags={author.tags} />
+          <button
+              onClick={handleDownArrow}
+              className="btn btn-primary btn-2xl rounded-full h-12 p-2 aspect-square">
+            <MoveDown size="calc(var(--spacing) * 8)" color="var(--color-base-300)" />
+          </button>
+        </div>
+        <div ref={secondBlockRef} className="flex flex-col w-full min-h-[calc(100dvh-72px)] gap-2 lg:gap-4 pb-12">
+          {/* A relative container to hold both the image and the hero */}
+          <div className="relative h-full">
+            {/* This is the optimized background image layer */}
+            {secondBlockBackground}
+
+            {/* The hero content and overlay go on top of the image */}
+            <div className="hero h-full relative z-10">
+              {/* Your overlay can be a regular div here, as it's on top of the image */}
+              <div className="hero-overlay flex flex-col justify-between absolute inset-0">
+                <div className="bg-base-100 pointer-events-none sticky top-0 flex h-16 [mask-image:linear-gradient(#000000,transparent)]"></div>
+                <div className="bg-base-100 pointer-events-none sticky bottom-0 flex h-16 [mask-image:linear-gradient(transparent,#000000)]"></div>
+              </div>
+              {/* Your hero-content goes on top of the overlay */}
+              <div className="hero-content flex-col lg:flex-row max-w-full">
+                <div>
+                  <h1 className="text-5xl font-bold">Box Office News!</h1>
+                  <p className="py-6">
+                    Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+                    quasi. In deleniti eaque aut repudiandae et a id nisi.
+                  </p>
+                  <button className="btn btn-primary">Get Started</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

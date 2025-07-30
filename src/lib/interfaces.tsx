@@ -1,5 +1,3 @@
-
-
 export interface StringElem {
     id?: string | number;
     value: string;

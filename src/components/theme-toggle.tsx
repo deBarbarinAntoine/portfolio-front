@@ -1,4 +1,4 @@
-"use client"; // This component runs on the client side
+"use client";
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
